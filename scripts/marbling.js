@@ -1,8 +1,8 @@
 var Marbling_Settings = {
-	
-	particleCountSQRT:600,
-	particleSize:6,
-	velocityResolution:64,
+
+	particleCountSQRT:1000,
+	particleSize:12,
+	velocityResolution:512,
 	velocityFalloff:0.97,
 	trackingSpeed:0.125,
 	texture:"images/lines-horizontal.png",
@@ -94,7 +94,7 @@ function init() {
 	var combAngle = document.getElementById( 'combAngle' );
 
 	function combUpdate(){
-		
+
 		if(useComb.checked){
 			if(!Marbling_Settings.comb){
 				Marbling_Settings.comb = new Comb(combSpace.value*Marbling_Settings.velocityResolution, combAngle.value);
@@ -110,7 +110,7 @@ function init() {
 	}
 
 	useComb.addEventListener('change', combUpdate);
-	combSpace.addEventListener('change', combUpdate);		
+	combSpace.addEventListener('change', combUpdate);
 	combAngle.addEventListener('change', combUpdate);
 }
 
@@ -185,12 +185,13 @@ function createPositionIntegrationPass(i_velocityPass){
 }
 
 function createOutputPass(i_positionPass){
-	
+
 	output_scene = new THREE.Scene();
+	output_scene.background = new THREE.Color( 0xffffff );
 	output_camera = new THREE.OrthographicCamera(0, Marbling_Globals.WIDTH, Marbling_Globals.HEIGHT, 0, -10000, 10000);
 	output_camera.position.z = 100;
 
-	var marble_texture = THREE.ImageUtils.loadTexture(Marbling_Settings.texture, THREE.UVMapping, 
+	var marble_texture = THREE.ImageUtils.loadTexture(Marbling_Settings.texture, THREE.UVMapping,
 		function(){
 			marble_texture.minFilter = THREE.LinearFilter;
 		}
@@ -224,7 +225,7 @@ function createOutputPass(i_positionPass){
 		transparent:    true
 
 	});
-	
+
 
 	var output_geometry = new THREE.Geometry();
 	for(var i = 0; i < Marbling_Settings.particleCountSQRT * Marbling_Settings.particleCountSQRT; ++i){
@@ -288,7 +289,7 @@ function onDocumentMouseDown( event ) {
 
 function onDocumentMouseUp( event ) {
 		event.preventDefault();
-		
+
 		if(Marbling_Settings.comb != null){
 			for(var i = 0; i < (Marbling_Settings.velocityResolution*2)/Marbling_Settings.comb.space; ++i){
 				Marbling_Globals.interactionPos[i] = undefined;
@@ -302,7 +303,7 @@ function onDocumentMouseUp( event ) {
 }
 
 function onDocumentMouseMove( event ) {
-	
+
 	var mP = getMousePos( Marbling_Globals.renderer.domElement, Marbling_Settings.velocityResolution, event );
 	if(Marbling_Settings.comb != null){
 		var cmbCnt = (Marbling_Settings.velocityResolution*2)/Marbling_Settings.comb.space;
@@ -324,7 +325,7 @@ function interactAt(i_position, i_index){
 		if(i_index < Marbling_Globals.interactionPos.length && Marbling_Globals.interactionPos[i_index] != null){
 			event.preventDefault();
 			var cMousePos = i_position;
-			
+
 			var vecX = ((cMousePos.x - Marbling_Globals.interactionPos[i_index].x) / (Marbling_Settings.velocityResolution));
 			var vecY = ((cMousePos.y - Marbling_Globals.interactionPos[i_index].y) / (Marbling_Settings.velocityResolution));
 			var vecOut = new THREE.Vector2(vecX, vecY);
@@ -378,7 +379,7 @@ function interactAt(i_position, i_index){
 		}else{
 
 			var iDiff = i_index - Marbling_Globals.interactionPos.length;
-			
+
 			if(iDiff > 0){
 				for(var i = 0; i < iDiff; ++i)
 					Marbling_Globals.interactionPos.push(undefined);
@@ -392,7 +393,7 @@ function interactAt(i_position, i_index){
 
 function getMousePos(canvas, bufferSize, evt) {
 	var rect = canvas.getBoundingClientRect();
-	
+
 	var w = (rect.right - rect.left);
   	var h = (rect.bottom - rect.top);
 
@@ -415,7 +416,7 @@ function animate() {
 
 	requestAnimationFrame( animate );
 	render();
-	
+
 
 	Marbling_Globals.stats.update();
 
